@@ -31,7 +31,6 @@ class MessageRepository:
         self, conservation_id: str, limit: int = 20
     ) -> List[Dict[str, Any]]:
         try:
-            # Validate and convert ID
             if not ObjectId.is_valid(conservation_id):
                 logger.error(f"Invalid conservation ID: {conservation_id}")
                 return []

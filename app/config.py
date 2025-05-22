@@ -28,18 +28,22 @@ class Settings(BaseSettings):
 
     EMBEDDINGS_MODEL: str = os.environ.get("EMBEDDINGS_MODEL", "all-MiniLM-L6-v2")
 
-    # MongoDB settings
     MONGODB_URI: str = os.environ.get("MONGODB_URI", "mongodb://localhost:27017/")
     MONGODB_DB: str = os.environ.get("MONGODB_DB", "chat-app")
 
-    # RAG settings
     RAG_CONTEXT_LIMIT: int = os.environ.get("RAG_CONTEXT_LIMIT", 30)
     RAG_RETRIEVAL_TOP_K: int = os.environ.get("RAG_RETRIEVAL_TOP_K", 5)
     RAG_CHUNK_SIZE: int = os.environ.get("RAG_CHUNK_SIZE", 1000)
     RAG_CHUNK_OVERLAP: int = os.environ.get("RAG_CHUNK_OVERLAP", 200)
 
-    # Vector store settings
     VECTOR_STORE_DIR: str = os.environ.get("VECTOR_STORE_DIR", "app/db/vectorstore")
+
+    AWS_ACCESS_KEY: str = os.environ.get("AWS_ACCESS_KEY", "")
+    AWS_SECRET_KEY: str = os.environ.get("AWS_SECRET_KEY", "")
+    AWS_REGION: str = os.environ.get("AWS_REGION", "us-east-1")
+    AWS_BUCKET_NAME: str = os.environ.get("S3_BUCKET_NAME", "chatapp-2025")
+
+    WHISPER_MODEL: str = os.environ.get("WHISPER_MODEL", "base")
 
 
 settings = Settings()

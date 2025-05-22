@@ -63,7 +63,6 @@ class RAGChatbot:
         context: str = None,
     ) -> str:
         try:
-            # Nếu không có conversation_id, sử dụng basic chat
             if not conversation_id:
                 response = self.llm.invoke(
                     self.chat_prompt.format(
@@ -72,18 +71,17 @@ class RAGChatbot:
                 )
                 return response.content
 
-            # Nếu context được cung cấp, sử dụng context đó thay vì khởi tạo từ DB
             if context:
                 logger.info(
                     f"Using provided context for conversation {conversation_id}"
                 )
                 prompt = f"""You are a helpful AI assistant in a chat application.
                 
-Recent conversation history:
-{context}
+                Recent conversation history:
+                {context}
 
-Please respond to the user's latest message based on this conversation history. Be helpful, concise, and informative.
-"""
+                Please respond to the user's latest message based on this conversation history. Be helpful, concise, and informative.
+                """
                 response = self.llm.invoke(prompt)
                 return response.content
 
