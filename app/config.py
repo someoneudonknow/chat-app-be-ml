@@ -43,7 +43,10 @@ class Settings(BaseSettings):
     AWS_REGION: str = os.environ.get("AWS_REGION", "us-east-1")
     AWS_BUCKET_NAME: str = os.environ.get("S3_BUCKET_NAME", "chatapp-2025")
 
-    WHISPER_MODEL: str = os.environ.get("WHISPER_MODEL", "base")
+    WHISPER_MODEL: str = os.environ.get("WHISPER_MODEL", "whisper-large-v3-turbo")
+
+    REDIS_HOST: str = os.environ.get("REDIS_HOST", "localhost")
+    REDIS_PORT: int = os.environ.get("REDIS_PORT", 6379)
 
 
 settings = Settings()
