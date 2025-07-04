@@ -130,33 +130,27 @@ def smart_preprocess_audio(
         start_time = time.time()
         audio = AudioSegment.from_file(input_path)
 
-        # Quick duration check - skip processing very short files
         duration_ms = len(audio)
-        if duration_ms < 1000:  # Less than 1 second
+        if duration_ms < 1000:
             logger.info("Audio too short, skipping preprocessing")
             audio.export(output_path, format="wav")
             return output_path
 
-        # Limit processing for very long files
         if target_duration and duration_ms > target_duration * 1000:
             logger.info(f"Truncating audio to {target_duration} seconds")
             audio = audio[: int(target_duration * 1000)]
 
-        # Basic optimization - convert to mono and resample
         if audio.channels > 1:
             audio = audio.set_channels(1)
 
         if audio.frame_rate != sample_rate:
             audio = audio.set_frame_rate(sample_rate)
 
-        # Skip heavy processing in quick mode
         if not quick_mode:
-            # Normalize audio
             if audio.max_dBFS > -0.1:
                 logger.warning("Clipping detected, normalizing audio")
             audio = audio.apply_gain(-audio.max_dBFS)
 
-            # Noise reduction (expensive operation)
             audio_samples = np.array(audio.get_array_of_samples(), dtype=np.float32)
             if len(audio_samples) > 0:
                 reduced_noise = nr.reduce_noise(
@@ -169,14 +163,11 @@ def smart_preprocess_audio(
                     channels=1,
                 )
 
-            # Apply filters
             audio = audio.low_pass_filter(8000).high_pass_filter(80)
 
-            # Remove silence
             silence_thresh = max(-40, audio.dBFS - 10)
             audio = audio.strip_silence(silence_len=100, silence_thresh=silence_thresh)
 
-        # Export optimized audio
         audio.export(
             output_path, format="wav", parameters=["-ac", "1", "-ar", str(sample_rate)]
         )
@@ -291,21 +282,19 @@ def transcribe_audio_optimized(
 ) -> Dict[str, Any]:
     """Optimized local Whisper transcription"""
     try:
-        # Use smaller model for faster processing if not specified
         model_size = model_size or getattr(settings, "WHISPER_MODEL", "base")
         model = get_whisper_model(model_size)
 
         start_time = time.time()
 
-        # Optimized transcription parameters
         result = model.transcribe(
             audio_file_path,
             language=language,
             fp16=False,
-            beam_size=1,  # Faster beam search
-            best_of=1,  # Single pass
-            temperature=0.0,  # Deterministic
-            condition_on_previous_text=False,  # Faster processing
+            beam_size=1,
+            best_of=1,
+            temperature=0.0,
+            condition_on_previous_text=False,
         )
 
         transcription_time = time.time() - start_time
@@ -342,7 +331,10 @@ async def generate_summary_async(
 
         Text: {text}
         
-        Limit: {max_length} characters. Focus on main topics and conclusions only."""
+        Limit: {max_length} characters. Focus on main topics and conclusions only.
+        
+        Note: just return a summarized result, DO NOT INCLUDE ANY OTHER TEXT
+        """
 
         llm = ChatGroq(
             api_key=settings.GROQ_API_KEY,
